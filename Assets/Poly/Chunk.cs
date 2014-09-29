@@ -9,8 +9,8 @@ public class Chunk : MonoBehaviour
 		private List<Vector2> newUV = new List<Vector2> ();
 		private float tUnit = 0.25f;
 		private Vector2 tStone = new Vector2 (1, 0);
-		private Vector2 tGrass = new Vector2 (0, 1);
-		private Vector2 tGrassTop = new Vector2 (1, 1);
+	private Vector2 tGrassTop = new Vector2 (0, 1);
+		private Vector2 tGrass = new Vector2 (1, 1);
 		private Vector2 tWhite = new Vector2 (3, 0);
 		private Mesh mesh;
 		private MeshCollider col;
@@ -210,7 +210,7 @@ public class Chunk : MonoBehaviour
 
 #region generation
 
-		void GenerateMesh ()
+		public void GenerateMesh ()
 		{
 		
 				for (int x=0; x<chunkSize; x++) {
@@ -224,43 +224,39 @@ public class Chunk : MonoBehaviour
 												if (Block (x, y + 1, z) == 0) {
 														//Block above is air
 														CubeTop (x, y, z, Block (x, y, z));
-														Debug.Log ("drawing CubeTop " + x + "," + y + "," + z);
+													//	Debug.Log ("drawing CubeTop " + x + "," + y + "," + z);
 												}
 						
 												if (Block (x, y - 1, z) == 0) {
 														//Block below is air
 														CubeBot (x, y, z, Block (x, y, z));							
-														Debug.Log ("drawing CubeBot " + x + "," + y + "," + z);
+													//	Debug.Log ("drawing CubeBot " + x + "," + y + "," + z);
 												}
 
 						
 												if (Block (x + 1, y, z) == 0) {
 														//Block east is air
 														CubeEast (x, y, z, Block (x, y, z));							
-														Debug.Log ("drawing CubeEast " + x + "," + y + "," + z);
+													//	Debug.Log ("drawing CubeEast " + x + "," + y + "," + z);
 												}
 						
 												if (Block (x - 1, y, z) == 0) {
 														//Block west is air
 														CubeWest (x, y, z, Block (x, y, z));							
-														Debug.Log ("drawing CubeWest " + x + "," + y + "," + z);
+													//	Debug.Log ("drawing CubeWest " + x + "," + y + "," + z);
 												}
 						
 												if (Block (x, y, z + 1) == 0) {
 														//Block north is air
 														CubeNorth (x, y, z, Block (x, y, z));							
-														Debug.Log ("drawing CubeNorth " + x + "," + y + "," + z);
+													//	Debug.Log ("drawing CubeNorth " + x + "," + y + "," + z);
 												}
 						
 												if (Block (x, y, z - 1) == 0) {
 														//Block south is air
 														CubeSouth (x, y, z, Block (x, y, z));							
-														Debug.Log ("drawing CubeSouth " + x + "," + y + "," + z);
+													//	Debug.Log ("drawing CubeSouth " + x + "," + y + "," + z);
 												}
-						
-										} else {
-												Debug.Log ("Block is air!");
-
 					
 										}
 								}
@@ -274,18 +270,26 @@ public class Chunk : MonoBehaviour
 
 #region loop
 
+		public bool needsUpdate = true;
+	
+		void LateUpdate ()
+		{
+				if (needsUpdate) {
+						GenerateMesh ();
+						UpdateMesh ();
+						needsUpdate = false;
+				}
+		}
+
 		void Start ()
 		{
 				world = worldGO.GetComponent ("World") as World;
 				mesh = GetComponent<MeshFilter> ().mesh;
-				col = GetComponent<MeshCollider> ();
-		
+				col = GetComponent<MeshCollider> ();		
 		}
 
 		void Update ()
 		{
-				GenerateMesh ();
-				UpdateMesh ();
 		}
 	
 		void UpdateMesh ()

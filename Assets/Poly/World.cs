@@ -5,7 +5,7 @@ public class World : MonoBehaviour
 {
 
 		public GameObject chunk;
-		public GameObject[,,] chunks;
+		public Chunk[,,] chunks;
 		public int chunkSize = 16;
 		public byte[,,] data;
 		public int worldX = 16;
@@ -64,7 +64,7 @@ public class World : MonoBehaviour
 								int dirt = PerlinNoise (x, 100, z, 50, 2, 0) + 1; //Added +1 to make sure minimum grass height is 1
 				
 								for (int y=0; y<worldY; y++) {
-										if (  y <= stone) {
+										if (y <= stone) {
 												data [x, y, z] = 1;
 										} else if (y <= dirt + stone) { //Changed this line thanks to a comment
 												data [x, y, z] = 2;
@@ -74,7 +74,7 @@ public class World : MonoBehaviour
 						}
 				}
 
-				chunks = new GameObject[Mathf.FloorToInt (worldX / chunkSize),
+				chunks = new Chunk[Mathf.FloorToInt (worldX / chunkSize),
 				                      Mathf.FloorToInt (worldY / chunkSize),
 				                      Mathf.FloorToInt (worldZ / chunkSize)];
 		
@@ -82,21 +82,21 @@ public class World : MonoBehaviour
 						for (int y=0; y<chunks.GetLength(1); y++) {
 								for (int z=0; z<chunks.GetLength(2); z++) {
 										Debug.Log ("doing chunk " + x + "," + y + "," + z);
-										chunks [x, y, z] = Instantiate (chunk,
-					                           new Vector3 (x * chunkSize, y * chunkSize, z * chunkSize),
-					                           new Quaternion (0, 0, 0, 0)) as GameObject;
+										GameObject g = Instantiate (chunk,
+					                          new Vector3 (x * chunkSize - 0.5f, y * chunkSize + 0.5f, z * chunkSize - 0.5f),
+					                          new Quaternion (0, 0, 0, 0)) as GameObject;
+										chunks [x, y, z] = g.GetComponent ("Chunk") as Chunk;
 					
-										Chunk newChunkScript = chunks [x, y, z].GetComponent ("Chunk") as Chunk;
- 
-										newChunkScript.worldGO = gameObject;
-										newChunkScript.chunkSize = chunkSize;
-										newChunkScript.chunkX = x * chunkSize;
-										newChunkScript.chunkY = y * chunkSize;
-										newChunkScript.chunkZ = z * chunkSize;
+										chunks [x, y, z].worldGO = gameObject;
+										chunks [x, y, z].chunkSize = chunkSize;
+										chunks [x, y, z].chunkX = x * chunkSize;
+										chunks [x, y, z].chunkY = y * chunkSize;
+										chunks [x, y, z].chunkZ = z * chunkSize;
 
 								}
 						}
 				}
 		}
 	#endregion
+
 }
